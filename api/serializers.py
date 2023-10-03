@@ -9,6 +9,13 @@ class AuthSerializer(TokenObtainPairSerializer):
     username_field = User.EMAIL_FIELD
 
     def validate(self, attrs: dict) -> dict:
-        """Расширенный метод валидации."""
+        """Валидация и аутентификация по email и password."""
         attrs["email"] = attrs["email"].lower()
-        return super().validate(attrs)
+        data = {}
+        user = User.objects.filter(email=attrs["email"]).first()
+        if not user:
+            return data
+        refresh = self.get_token(user)
+        data["refresh"] = str(refresh)
+        data["access"] = str(refresh.access_token)
+        return data
