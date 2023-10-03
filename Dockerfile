@@ -20,4 +20,4 @@ RUN pip install --no-cache-dir --upgrade pip && \
     poetry config virtualenvs.create false && \
     poetry install
 
-CMD bash -c "python manage.py migrate; python manage.py runserver 0.0.0.0:8000"
+CMD bash -c "python manage.py migrate; python manage.py runserver 0.0.0.0:8888"
