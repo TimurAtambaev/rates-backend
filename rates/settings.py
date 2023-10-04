@@ -166,7 +166,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = default_headers
 
-AUTH_USER_MODEL = "api.User"
+AUTH_USER_MODEL = "api.AppUser"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
