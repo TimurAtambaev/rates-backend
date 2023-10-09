@@ -3,8 +3,7 @@ FROM python:3.11-slim-buster
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV POETRY_VERSION "~=1.6.1"
-ENV POETRY_VIRTUALENVS_IN_PROJECT=true
-ENV TZ="UTC"
+ENV TZ="Europe/Moscow"
 
 WORKDIR /app
 
@@ -19,5 +18,3 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
     poetry install
-
-CMD bash -c "python manage.py migrate; python manage.py runserver 0.0.0.0:8888"

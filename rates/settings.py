@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from datetime import timedelta
-from os import environ
 from pathlib import Path
 
 from corsheaders.defaults import default_headers
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "django_filters",
     "corsheaders",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -87,14 +88,13 @@ WSGI_APPLICATION = "rates.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": environ.get("POSTGRES_DB"),
-        "USER": environ.get("POSTGRES_USER"),
-        "PASSWORD": environ.get("POSTGRES_PASSWORD"),
-        "HOST": environ.get("POSTGRES_HOST"),
-        "PORT": environ.get("POSTGRES_PORT"),
+        "NAME": config("POSTGRES_DB"),
+        "USER": config("POSTGRES_USER"),
+        "PASSWORD": config("POSTGRES_PASSWORD"),
+        "HOST": config("POSTGRES_HOST"),
+        "PORT": config("POSTGRES_PORT"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -132,7 +132,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-REFRESH_TOKEN_LIFETIME = int(environ.get("REFRESH_TOKEN_LIFETIME", 14))
+REFRESH_TOKEN_LIFETIME = int(config("REFRESH_TOKEN_LIFETIME", 14))
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
@@ -168,12 +168,23 @@ CORS_ALLOW_HEADERS = default_headers
 
 AUTH_USER_MODEL = "api.AppUser"
 
+REDIS_HOST = config("REDIS_HOST")
+REDIS_PORT = int(config("REDIS_PORT"))
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+MAX_DIGITS = 6
+DECIMAL_PLACES = 4
+DAYS_TO_DOWNLOAD_RATES = 30
+URL_DAILY_RATES = "https://www.cbr-xml-daily.ru/daily_json.js"
+URL_ARCHIVE_RATES = "https://www.cbr-xml-daily.ru/archive"
+URL_ARCHIVE_RATES_SUFFIX = "daily_json.js"
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Moscow"
 
 USE_I18N = True
 
