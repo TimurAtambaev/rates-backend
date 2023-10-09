@@ -172,9 +172,10 @@ REDIS_HOST = config("REDIS_HOST")
 REDIS_PORT = int(config("REDIS_PORT"))
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
+MAX_CURRENCY_SYMBOL = 10
 MAX_DIGITS = 6
 DECIMAL_PLACES = 4
-DAYS_TO_DOWNLOAD_RATES = 30
+DAYS_TO_LOAD_RATES = 30
 URL_DAILY_RATES = "https://www.cbr-xml-daily.ru/daily_json.js"
 URL_ARCHIVE_RATES = "https://www.cbr-xml-daily.ru/archive"
 URL_ARCHIVE_RATES_SUFFIX = "daily_json.js"

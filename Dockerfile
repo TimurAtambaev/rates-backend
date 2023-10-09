@@ -1,10 +1,5 @@
 FROM python:3.11-slim-buster
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV POETRY_VERSION "~=1.6.1"
-ENV TZ="Europe/Moscow"
-
 WORKDIR /app
 
 RUN apt-get update && \
@@ -18,3 +13,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
     poetry install
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app:$PYTHONPATH
+ENV POETRY_VERSION "~=1.6.1"
+ENV TZ="Europe/Moscow"

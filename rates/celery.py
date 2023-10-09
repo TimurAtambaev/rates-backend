@@ -8,7 +8,7 @@ app = Celery(
     broker=f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/0",
     backend=f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/0",
 )
-
+app.autodiscover_tasks()
 
 if __name__ == "__main__":
     app.start()
