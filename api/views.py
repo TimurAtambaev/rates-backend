@@ -107,9 +107,11 @@ class RatesView(APIView):
             currency.charcode: currency.threshold
             for currency in user_currencies
         }
-        trackable_rates = list(Rates.objects.filter(
-            charcode__in=user_currencies_dict
-        ).values("id", "date", "charcode", "value"))
+        trackable_rates = list(
+            Rates.objects.filter(charcode__in=user_currencies_dict).values(
+                "id", "date", "charcode", "value"
+            )
+        )
         for rate in trackable_rates:
             for currency in user_currencies_dict:
                 if rate["charcode"] == currency:
