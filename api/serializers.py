@@ -5,6 +5,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class AuthSerializer(TokenObtainPairSerializer):
     """Сериализатор для авторизации."""
+
     username_field = User.EMAIL_FIELD
 
     def validate(self, attrs: dict) -> dict:

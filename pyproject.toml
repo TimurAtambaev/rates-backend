@@ -69,21 +69,6 @@ pytest-xdist = "^3.0.2"
 [tool.black]
 line-length = 79
 include = '\.py$'
-exclude = '''
-(
-    /(
-        \.git
-      | \.mypy_cache
-      | env
-      | test-reports
-      | ptvs_virtualenv_proxy.py
-      | migrations
-      | venv
-    )/
-    | goldstream/__init__.py
-)
-
-'''
 
 [tool.isort]
 line_length = 79

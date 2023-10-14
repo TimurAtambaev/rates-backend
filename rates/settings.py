@@ -136,7 +136,7 @@ REFRESH_TOKEN_LIFETIME = int(config("REFRESH_TOKEN_LIFETIME", 14))
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=REFRESH_TOKEN_LIFETIME),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
@@ -172,13 +172,16 @@ REDIS_HOST = config("REDIS_HOST")
 REDIS_PORT = int(config("REDIS_PORT"))
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-MAX_CURRENCY_SYMBOL = 10
-MAX_DIGITS = 6
-DECIMAL_PLACES = 4
+PERIODIC_TASK_DAILY_TIME_HOURS = 12
+MAX_CURRENCY_CHARCODE = 5
+CURRENCY_KEY_IN_API = "Valute"
+MAX_DIGITS = 20
+DECIMAL_PLACES = 10
 DAYS_TO_LOAD_RATES = 30
 URL_DAILY_RATES = "https://www.cbr-xml-daily.ru/daily_json.js"
-URL_ARCHIVE_RATES = "https://www.cbr-xml-daily.ru/archive"
+URL_ARCHIVE_RATES_BASE = "https://www.cbr-xml-daily.ru/archive"
 URL_ARCHIVE_RATES_SUFFIX = "daily_json.js"
+API_REQUEST_TIMEOUT = 10
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

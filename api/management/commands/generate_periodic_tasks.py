@@ -6,26 +6,19 @@ from django_celery_beat.models import CrontabSchedule, PeriodicTask
 class Command(BaseCommand):
     """Команда генерации периодических задач."""
 
-    help = 'generate periodic tasks'
+    help = "generate periodic tasks"  # noqa A003
 
-    def handle(self, *args, **options):
+    def handle(self, *args: tuple, **options: dict) -> None:
         """Точка входа команды."""
-        self.stdout.write('generate periodic tasks...')
+        self.stdout.write("generate periodic tasks...")
         self.task_download_rates()
 
-    def task_download_rates(self):
+    def task_download_rates(self) -> None:
         """Создать периодическую задачу загрузки курсов валют."""
-        schedule, _ = CrontabSchedule.objects.get_or_create(
-            minute='*',
-            hour='*',
-            day_of_week='*',
-            day_of_month='*',
-            month_of_year='*',
-        )
+        schedule, _ = CrontabSchedule.objects.get_or_create(minute="*")
 
         PeriodicTask.objects.update_or_create(
             crontab=schedule,
-            name='download_rates',
-            task='download_rates',
+            name="download_rates",
+            task="download_rates",
         )
-

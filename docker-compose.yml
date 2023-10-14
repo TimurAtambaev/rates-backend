@@ -54,6 +54,8 @@ services:
       - rates
      networks:
        - rates
+     volumes:
+       - .:/rates/
 
    beat:
      <<: *celery_template

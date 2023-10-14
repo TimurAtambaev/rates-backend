@@ -13,6 +13,8 @@ class AuthRegForm(forms.Form):
         return self.cleaned_data["email"].lower()
 
 
+class RatesForm(forms.Form):
+    """Форма для добавления валюты и порогового значения."""
 
-
-
+    currency = forms.IntegerField()
+    threshold = forms.IntegerField()

@@ -1,8 +1,8 @@
 format:
-	poetry run isort rates/
-	poetry run black rates/
+	poetry run isort api/
+	poetry run black api/
 
 check:
-	poetry run isort rates --check
-	poetry run flake8 rates
-	poetry run black rates --check
+	poetry run isort api --check
+	poetry run flake8 api
+	poetry run black api --check
