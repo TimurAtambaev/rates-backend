@@ -5,12 +5,6 @@ from django.db import models
 from rates.settings import DECIMAL_PLACES, MAX_CURRENCY_CHARCODE, MAX_DIGITS
 
 
-class Currency(models.Model):
-    """Модель всех валют."""
-
-    charcode = models.CharField(max_length=MAX_CURRENCY_CHARCODE)
-
-
 class AppUser(AbstractUser):
     """Модель пользователя."""
 
@@ -22,6 +16,12 @@ class AppUser(AbstractUser):
     def __str__(self) -> str:
         """Строковое представление модели."""
         return self.email
+
+
+class Currency(models.Model):
+    """Модель всех валют."""
+
+    charcode = models.CharField(max_length=MAX_CURRENCY_CHARCODE)
 
 
 class UserCurrency(models.Model):
