@@ -17,7 +17,7 @@ from api.repository import (
     get_all_currencies,
     get_all_rates,
     get_currency,
-    get_filter_by_code_and_date_rates,
+    get_filter_by_code_and_period_rates,
     get_filter_by_code_rates,
     get_user_currencies,
 )
@@ -166,7 +166,7 @@ class AnaliticsView(APIView):
         )
 
         target_rates = list(
-            get_filter_by_code_and_date_rates(
+            get_filter_by_code_and_period_rates(
                 target_currency.charcode, date_from, date_to, order_by
             )
         )

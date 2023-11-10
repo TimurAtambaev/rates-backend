@@ -5,7 +5,12 @@ import requests
 from celery import shared_task
 from loguru import logger
 
-from api.models import Currency, Rates
+from api.repository import (
+    create_or_update_currency,
+    create_rate,
+    get_all_currencies,
+    get_filter_by_code_and_date_rates,
+)
 from rates.settings import (
     API_REQUEST_TIMEOUT,
     CURRENCY_KEY_IN_API,
@@ -53,16 +58,16 @@ def get_data_from_api(url: str, target_date: date) -> dict:
 def save_rates(rates: dict) -> None:
     """Сохранить котировки валют за конкретную дату."""
     for currency in rates[CURRENCY_KEY_IN_API]:
-        if not Rates.objects.filter(date=rates["Date"], charcode=currency):
-            Rates.objects.create(
-                date=rates["Date"],
-                charcode=currency,
-                value=rates[CURRENCY_KEY_IN_API][currency]["Value"],
+        if not get_filter_by_code_and_date_rates(currency, rates["Date"]):
+            create_rate(
+                rates["Date"],
+                currency,
+                rates[CURRENCY_KEY_IN_API][currency]["Value"],
             )
 
 
 def save_currencies(rates: dict) -> None:
     """Сохранить валюты представленные в API ЦБ РФ."""
-    if not Currency.objects.all().first() and CURRENCY_KEY_IN_API in rates:
+    if not get_all_currencies() and CURRENCY_KEY_IN_API in rates:
         for charcode in rates[CURRENCY_KEY_IN_API]:
-            Currency.objects.update_or_create(charcode=charcode)
+            create_or_update_currency(charcode)
