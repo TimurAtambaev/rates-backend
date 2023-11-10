@@ -14,6 +14,7 @@ from api.forms import AuthRegForm, RatesForm
 from api.repository import (
     create_or_update_user_currency,
     create_user,
+    get_all_currencies,
     get_all_rates,
     get_currency,
     get_filter_by_code_and_date_rates,
@@ -197,3 +198,20 @@ class AnaliticsView(APIView):
             )
 
         return JsonResponse({"rates": target_rates})
+
+
+class CurrencyView(APIView):
+    """Класс для работы с валютами."""
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> JsonResponse:
+        """Получение всех валют."""
+        return JsonResponse(
+            {
+                "currencies": {
+                    currency.id: currency.charcode
+                    for currency in get_all_currencies()
+                }
+            }
+        )

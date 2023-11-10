@@ -2,7 +2,13 @@
 from django.urls import path
 from django.views.decorators.cache import cache_page
 
-from api.views import AnaliticsView, Auth, RatesView, Registration
+from api.views import (
+    AnaliticsView,
+    Auth,
+    CurrencyView,
+    RatesView,
+    Registration,
+)
 from rates.settings import CACHE_TIMEOUT
 
 urlpatterns = [
@@ -17,4 +23,5 @@ urlpatterns = [
         cache_page(CACHE_TIMEOUT)(AnaliticsView.as_view()),
         name="analitics",
     ),
+    path("currencies/", CurrencyView.as_view(), name="currencies"),
 ]

@@ -17,6 +17,11 @@ def create_user(data: AuthRegForm) -> None:
         user.save(update_fields=["password"])
 
 
+def get_all_currencies() -> Iterable:
+    """Получить все валюты."""
+    return Currency.objects.all()
+
+
 def get_currency(currency_id: int) -> Optional[Currency]:
     """Получить валюту по id."""
     return Currency.objects.filter(id=currency_id).first()
