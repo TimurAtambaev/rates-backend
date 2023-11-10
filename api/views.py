@@ -2,7 +2,6 @@
 from datetime import datetime
 from typing import Any
 
-from django.db import transaction
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -12,7 +11,15 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from api.forms import AuthRegForm, RatesForm
-from api.models import AppUser, Currency, Rates, UserCurrency
+from api.repository import (
+    create_or_update_user_currency,
+    create_user,
+    get_all_rates,
+    get_currency,
+    get_filter_by_code_and_date_rates,
+    get_filter_by_code_rates,
+    get_user_currencies,
+)
 from api.serializers import AuthSerializer
 
 
@@ -32,11 +39,7 @@ class Registration(APIView):
                 {"errors": data.errors}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        with transaction.atomic():
-            data.cleaned_data["username"] = data.cleaned_data["email"]
-            user = AppUser.objects.create(**data.cleaned_data)
-            user.set_password(data.cleaned_data["password"])
-            user.save(update_fields=["password"])
+        create_user(data)
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -72,19 +75,14 @@ class RatesView(APIView):
             return Response(
                 {"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST
             )
-        if not (
-            currency := Currency.objects.filter(
-                id=form.cleaned_data["currency"]
-            ).first()
-        ):
+        if not (currency := get_currency(form.cleaned_data["currency"])):
             return Response(
                 {"errors": "currency with this ID was not found"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        UserCurrency.objects.update_or_create(
-            user=request.user,
-            charcode=currency.charcode,
-            threshold=form.cleaned_data["threshold"],
+
+        create_or_update_user_currency(
+            request.user, currency.charcode, form.cleaned_data["threshold"]
         )
 
         return Response(status=status.HTTP_201_CREATED)
@@ -97,25 +95,15 @@ class RatesView(APIView):
             else "value"
         )
         if not request.user.is_authenticated:
-            return JsonResponse(
-                {
-                    "rates": list(
-                        Rates.objects.order_by(order_by)
-                        .all()
-                        .values("id", "date", "charcode", "value")
-                    )
-                }
-            )
+            return JsonResponse({"rates": list(get_all_rates(order_by))})
 
-        user_currencies = UserCurrency.objects.filter(user__id=request.user.id)
+        user_currencies = get_user_currencies(request.user.id)
         user_currencies_dict = {
             currency.charcode: currency.threshold
             for currency in user_currencies
         }
         trackable_rates = list(
-            Rates.objects.order_by(order_by)
-            .filter(charcode__in=user_currencies_dict)
-            .values("id", "date", "charcode", "value")
+            get_filter_by_code_rates(user_currencies_dict, order_by)
         )
         for rate in trackable_rates:
             for currency in user_currencies_dict:
@@ -139,7 +127,7 @@ class AnaliticsView(APIView):
         **kwargs: Any,
     ) -> JsonResponse:
         """Получение аналитических данных по котирумой валюте за период."""
-        if not (target_currency := Currency.objects.filter(id=id).first()):
+        if not (target_currency := get_currency(id)):
             return JsonResponse(
                 {"errors": "currency with this ID was not found"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -177,26 +165,23 @@ class AnaliticsView(APIView):
         )
 
         target_rates = list(
-            Rates.objects.order_by(order_by)
-            .filter(charcode=target_currency.charcode)
-            .filter(date__gte=date_from)
-            .filter(date__lte=date_to)
-            .values("id", "date", "charcode", "value")
+            get_filter_by_code_and_date_rates(
+                target_currency.charcode, date_from, date_to, order_by
+            )
         )
         for num, rate in enumerate(target_rates, start=1):
-            if rate["charcode"] == target_currency.charcode:
-                rate["percentage_ratio"] = (
-                    str(round(100 * rate["value"] / threshold, 2)) + "%"
-                )
-                if rate["value"] > threshold:
-                    rate["is_threshold_exceeded"] = True
-                    rate["threshold_match_type"] = "exceeded"
-                elif rate["value"] < threshold:
-                    rate["is_threshold_exceeded"] = False
-                    rate["threshold_match_type"] = "less"
-                elif rate["value"] == threshold:
-                    rate["is_threshold_exceeded"] = False
-                    rate["threshold_match_type"] = "equal"
+            rate["percentage_ratio"] = (
+                str(round(100 * rate["value"] / threshold, 2)) + "%"
+            )
+            if rate["value"] > threshold:
+                rate["is_threshold_exceeded"] = True
+                rate["threshold_match_type"] = "exceeded"
+            elif rate["value"] < threshold:
+                rate["is_threshold_exceeded"] = False
+                rate["threshold_match_type"] = "less"
+            elif rate["value"] == threshold:
+                rate["is_threshold_exceeded"] = False
+                rate["threshold_match_type"] = "equal"
 
             rate["is_min_value"] = bool(
                 num == 1
