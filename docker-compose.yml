@@ -26,7 +26,6 @@ services:
        - "15432:5432"
      env_file:
        - .env
-     restart: always
      networks:
        - rates
 
@@ -36,7 +35,6 @@ services:
        - .env
      ports:
        - 6379
-     restart: always
      networks:
        - rates
 

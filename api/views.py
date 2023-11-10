@@ -1,9 +1,9 @@
 """Модуль с обработчиками запросов."""
+from datetime import datetime
 from typing import Any
 
 from django.db import transaction
 from django.http import JsonResponse
-from loguru import logger
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
@@ -31,15 +31,13 @@ class Registration(APIView):
             return Response(
                 {"errors": data.errors}, status=status.HTTP_400_BAD_REQUEST
             )
-        try:
-            with transaction.atomic():
-                data.cleaned_data["username"] = data.cleaned_data["email"]
-                user = AppUser.objects.create(**data.cleaned_data)
-                user.set_password(data.cleaned_data["password"])
-                user.save(update_fields=["password"])
-        except Exception as exc:
-            logger.error(exc)
-            raise exc
+
+        with transaction.atomic():
+            data.cleaned_data["username"] = data.cleaned_data["email"]
+            user = AppUser.objects.create(**data.cleaned_data)
+            user.set_password(data.cleaned_data["password"])
+            user.save(update_fields=["password"])
+
         return Response(status=status.HTTP_201_CREATED)
 
 
@@ -75,7 +73,9 @@ class RatesView(APIView):
                 {"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST
             )
         if not (
-            currency := Currency.objects.get(id=form.cleaned_data["currency"])
+            currency := Currency.objects.filter(
+                id=form.cleaned_data["currency"]
+            ).first()
         ):
             return Response(
                 {"errors": "currency with this ID was not found"},
@@ -91,13 +91,18 @@ class RatesView(APIView):
 
     def get(self, request: Request, *args: Any, **kwargs: Any) -> JsonResponse:
         """Получение списка актуальных котировок."""
+        order_by = (
+            request.GET.get("order_by")
+            if request.GET.get("order_by") == "-value"
+            else "value"
+        )
         if not request.user.is_authenticated:
             return JsonResponse(
                 {
                     "rates": list(
-                        Rates.objects.all().values(
-                            "id", "date", "charcode", "value"
-                        )
+                        Rates.objects.order_by(order_by)
+                        .all()
+                        .values("id", "date", "charcode", "value")
                     )
                 }
             )
@@ -108,9 +113,9 @@ class RatesView(APIView):
             for currency in user_currencies
         }
         trackable_rates = list(
-            Rates.objects.filter(charcode__in=user_currencies_dict).values(
-                "id", "date", "charcode", "value"
-            )
+            Rates.objects.order_by(order_by)
+            .filter(charcode__in=user_currencies_dict)
+            .values("id", "date", "charcode", "value")
         )
         for rate in trackable_rates:
             for currency in user_currencies_dict:
@@ -119,3 +124,91 @@ class RatesView(APIView):
                         rate["value"] > user_currencies_dict[currency]
                     )
         return JsonResponse({"rates": trackable_rates})
+
+
+class AnaliticsView(APIView):
+    """Класс для работы с аналитикой котировок."""
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(
+        self,
+        request: Request,
+        id: int,  # noqa A002
+        *args: Any,
+        **kwargs: Any,
+    ) -> JsonResponse:
+        """Получение аналитических данных по котирумой валюте за период."""
+        if not (target_currency := Currency.objects.filter(id=id).first()):
+            return JsonResponse(
+                {"errors": "currency with this ID was not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not (threshold := request.GET.get("threshold")):
+            return JsonResponse(
+                {"errors": "missing 'threshold' in query params"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not (date_from := request.GET.get("date_from")):
+            return JsonResponse(
+                {"errors": "missing 'date_from' in query params"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not (date_to := request.GET.get("date_to")):
+            return JsonResponse(
+                {"errors": "missing 'date_to' in query params"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            threshold = int(threshold)
+            date_from = datetime.fromisoformat(date_from).date()
+            date_to = datetime.fromisoformat(date_to).date()
+        except Exception as exc:
+            return JsonResponse(
+                {"errors": f"wrong query params: {exc}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        order_by = (
+            request.GET.get("order_by")
+            if request.GET.get("order_by") == "-value"
+            else "value"
+        )
+
+        target_rates = list(
+            Rates.objects.order_by(order_by)
+            .filter(charcode=target_currency.charcode)
+            .filter(date__gte=date_from)
+            .filter(date__lte=date_to)
+            .values("id", "date", "charcode", "value")
+        )
+        for num, rate in enumerate(target_rates, start=1):
+            if rate["charcode"] == target_currency.charcode:
+                rate["percentage_ratio"] = (
+                    str(round(100 * rate["value"] / threshold, 2)) + "%"
+                )
+                if rate["value"] > threshold:
+                    rate["is_threshold_exceeded"] = True
+                    rate["threshold_match_type"] = "exceeded"
+                elif rate["value"] < threshold:
+                    rate["is_threshold_exceeded"] = False
+                    rate["threshold_match_type"] = "less"
+                elif rate["value"] == threshold:
+                    rate["is_threshold_exceeded"] = False
+                    rate["threshold_match_type"] = "equal"
+
+            rate["is_min_value"] = bool(
+                num == 1
+                and order_by == "value"
+                or num == len(target_rates)
+                and order_by == "-value"
+            )
+            rate["is_max_value"] = bool(
+                num == len(target_rates)
+                and order_by == "value"
+                or num == 1
+                and order_by == "-value"
+            )
+
+        return JsonResponse({"rates": target_rates})

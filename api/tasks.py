@@ -29,7 +29,7 @@ def download_rates() -> None:
         target_date = current_date - timedelta(days=num_day)
         day = datetime.strftime(target_date, "%Y/%m/%d")
         archive_url = (
-            f"{URL_ARCHIVE_RATES_BASE}/{day}/" f"{URL_ARCHIVE_RATES_SUFFIX}"
+            f"{URL_ARCHIVE_RATES_BASE}/{day}/{URL_ARCHIVE_RATES_SUFFIX}"
         )
         archive_rates = get_data_from_api(archive_url, target_date)
         if CURRENCY_KEY_IN_API in archive_rates:

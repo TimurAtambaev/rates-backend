@@ -14,6 +14,7 @@ from pathlib import Path
 
 from corsheaders.defaults import default_headers
 from decouple import config
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -154,6 +155,14 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"redis://{config('REDIS_HOST')}:{config('REDIS_PORT')}/0",
+    }
+}
+CACHE_TIMEOUT = int(config('CACHE_TIMEOUT', 0))
 
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
