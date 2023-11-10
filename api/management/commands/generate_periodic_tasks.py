@@ -2,6 +2,11 @@
 from django.core.management.base import BaseCommand
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
 
+from rates.settings import (
+    HOUR_TO_RUN_PERIODIC_TASK,
+    MINUTE_TO_RUN_PERIODIC_TASK,
+)
+
 
 class Command(BaseCommand):
     """Команда генерации периодических задач."""
@@ -15,7 +20,9 @@ class Command(BaseCommand):
 
     def task_download_rates(self) -> None:
         """Создать периодическую задачу загрузки курсов валют."""
-        schedule, _ = CrontabSchedule.objects.get_or_create(minute="*")
+        schedule, _ = CrontabSchedule.objects.get_or_create(
+            hour=HOUR_TO_RUN_PERIODIC_TASK, minute=MINUTE_TO_RUN_PERIODIC_TASK
+        )
 
         PeriodicTask.objects.update_or_create(
             crontab=schedule,
