@@ -78,7 +78,11 @@ class RatesView(APIView):
             )
         if not (currency := get_currency(form.cleaned_data["currency"])):
             return Response(
-                {"errors": "currency with this ID was not found"},
+                {
+                    "errors": "currency with this ID not found, use "
+                    "endpoint 'currencies/' to obtain all available "
+                    "currencies"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -130,7 +134,11 @@ class AnaliticsView(APIView):
         """Получение аналитических данных по котирумой валюте за период."""
         if not (target_currency := get_currency(id)):
             return JsonResponse(
-                {"errors": "currency with this ID was not found"},
+                {
+                    "errors": "currency with this ID not found, use "
+                    "endpoint 'currencies/' to obtain all available "
+                    "currencies"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
         if not (threshold := request.GET.get("threshold")):
