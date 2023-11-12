@@ -21,5 +21,5 @@ urlpatterns = [
         cache_page(CACHE_TIMEOUT)(AnaliticsView.as_view()),
         name="analitics",
     ),
-    path("currencies/", CurrencyView.as_view(), name="currencies"),
+    path("currency/all/", CurrencyView.as_view(), name="currencies"),
 ]

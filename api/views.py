@@ -80,7 +80,7 @@ class RatesView(APIView):
             return Response(
                 {
                     "errors": "currency with this ID not found, use "
-                    "endpoint 'currencies/' to obtain all available "
+                    "endpoint 'currency/all/' to obtain all available "
                     "currencies"
                 },
                 status=status.HTTP_400_BAD_REQUEST,
@@ -136,7 +136,7 @@ class AnaliticsView(APIView):
             return JsonResponse(
                 {
                     "errors": "currency with this ID not found, use "
-                    "endpoint 'currencies/' to obtain all available "
+                    "endpoint 'currency/all/' to obtain all available "
                     "currencies"
                 },
                 status=status.HTTP_400_BAD_REQUEST,
