@@ -94,11 +94,8 @@ class RatesView(APIView):
 
     def get(self, request: Request, *args: Any, **kwargs: Any) -> JsonResponse:
         """Получение списка актуальных котировок."""
-        order_by = (
-            request.GET.get("order_by")
-            if request.GET.get("order_by") == "-value"
-            else "value"
-        )
+        order_by = get_order_by(request.GET.get("order_by"))
+
         if not request.user.is_authenticated:
             return JsonResponse({"rates": list(get_all_rates(order_by))})
 
@@ -167,11 +164,7 @@ class AnaliticsView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        order_by = (
-            request.GET.get("order_by")
-            if request.GET.get("order_by") == "-value"
-            else "value"
-        )
+        order_by = get_order_by(request.GET.get("order_by"))
 
         target_rates = list(
             get_filter_by_code_and_period_rates(
@@ -223,3 +216,8 @@ class CurrencyView(APIView):
                 }
             }
         )
+
+
+def get_order_by(order_by: str) -> str:
+    """Получить порядок сортировки по полю value из параметров запроса."""
+    return order_by if order_by == "-value" else "value"
