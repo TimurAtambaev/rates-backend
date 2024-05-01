@@ -690,6 +690,22 @@ files = [
 Django = ">=3.2"
 
 [[package]]
+name = "django-fakery"
+version = "4.1.1"
+description = "A model instances generator for Django"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django-fakery-4.1.1.tar.gz", hash = "sha256:3541faff339752fff527b0b0632769bfd279c4b5a4a9ac92aa4ad83744fc3dfc"},
+    {file = "django_fakery-4.1.1-py2.py3-none-any.whl", hash = "sha256:196b200df404a17620161ee14662e4e5148966aa8202ef9366a62cf77328a992"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+Faker = ">=10.0,<11.0"
+six = ">=1.10.1"
+
+[[package]]
 name = "django-filter"
 version = "23.3"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
@@ -956,17 +972,18 @@ doc = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-spelling"]
 
 [[package]]
 name = "faker"
-version = "19.6.2"
+version = "10.0.0"
 description = "Faker is a Python package that generates fake data for you."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.6"
 files = [
-    {file = "Faker-19.6.2-py3-none-any.whl", hash = "sha256:8fba91068dc26e3159c1ac9f22444a2338704b0991d86605322e454bda420092"},
-    {file = "Faker-19.6.2.tar.gz", hash = "sha256:d5d5953556b0fb428a46019e03fc2d40eab2980135ddef5a9eb3d054947fdf83"},
+    {file = "Faker-10.0.0-py3-none-any.whl", hash = "sha256:3163c84866cf118ac5329a802e046b0f729528ce62ebb2806b626e0badbb6ff3"},
+    {file = "Faker-10.0.0.tar.gz", hash = "sha256:530690ad12a2a054071af95fc8a354c5fd57b5e7707053a9662f40f14a87b68e"},
 ]
 
 [package.dependencies]
 python-dateutil = ">=2.4"
+text-unidecode = "1.3"
 
 [[package]]
 name = "flake8"
@@ -1637,6 +1654,21 @@ files = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
+
+[[package]]
+name = "mimesis"
+version = "16.0.0"
+description = "Mimesis: Fake Data Generator."
+optional = false
+python-versions = "<4.0,>=3.10"
+files = [
+    {file = "mimesis-16.0.0-py3-none-any.whl", hash = "sha256:adeebdd6c39b84fcf5c232cb42a931cfdaf541248a4b34382029e90d357c35dd"},
+    {file = "mimesis-16.0.0.tar.gz", hash = "sha256:0837e4063a62e15b4ac73ae5fdef37c93c5ba0e02c9e5681481c1dfde407d4fe"},
+]
+
+[package.extras]
+factory = ["factory-boy (>=3.3.0,<4.0.0)"]
+pytest = ["pytest (>=7.2,<8.0)"]
 
 [[package]]
 name = "multidict"
@@ -2456,6 +2488,17 @@ doc = ["sphinx"]
 test = ["pytest", "pytest-cov"]
 
 [[package]]
+name = "text-unidecode"
+version = "1.3"
+description = "The most basic Text::Unidecode port"
+optional = false
+python-versions = "*"
+files = [
+    {file = "text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93"},
+    {file = "text_unidecode-1.3-py2.py3-none-any.whl", hash = "sha256:1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8"},
+]
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -2674,4 +2717,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "e07ec21e0f414819a709e2b01b5b741e81929cbbebb6943eec70141efd05ec64"
+content-hash = "c76214be554475b0ebd4b6830aef03cc6b8a5b6a5771d98056292b8314c33e98"

@@ -7,6 +7,8 @@ class AuthRegForm(forms.Form):
 
     email = forms.EmailField(required=True, max_length=50)
     password = forms.CharField(required=True, min_length=8, max_length=50)
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
 
     def clean_email(self) -> str:
         """Приведение email к нижнему регистру."""
