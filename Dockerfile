@@ -22,4 +22,5 @@ RUN pip install --no-cache-dir --upgrade pip && \
     poetry config virtualenvs.create false && \
     poetry install
 
+COPY tests /app/tests
 COPY . /app/

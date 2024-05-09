@@ -39,8 +39,12 @@ class Registration(APIView):
             return Response(
                 {"errors": data.errors}, status=status.HTTP_400_BAD_REQUEST
             )
-
-        create_user(data)
+        try:
+            create_user(data)
+        except Exception as exc:
+            return Response(
+                {"errors": str(exc)}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response(status=status.HTTP_201_CREATED)
 
