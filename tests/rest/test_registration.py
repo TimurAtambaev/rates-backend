@@ -16,7 +16,7 @@ def test_valid_registration(
     assert_correct_registration: UserAssertion,
 ) -> None:
     """Тест регистрации пользователей."""
-    registration_data = registration_data_factory("test@test.com")
+    registration_data = registration_data_factory()
     response = client.post(reverse("registration"), data=registration_data)
     assert response.status_code == HTTPStatus.CREATED
     assert_correct_registration(registration_data["email"], registration_data)
@@ -41,7 +41,7 @@ def test_authorization(
     assert_correct_registration: UserAssertion,
 ) -> None:
     """Тест успешной авторизации в сервисе."""
-    registration_data = registration_data_factory("test@test.com")
+    registration_data = registration_data_factory()
     client.post(reverse("registration"), data=registration_data)
     response = client.post(reverse("auth"), data=registration_data)
     assert response.status_code == HTTPStatus.OK
@@ -56,7 +56,7 @@ def test_unauthorization(
     assert_correct_registration: UserAssertion,
 ) -> None:
     """Тест неуспешной авторизации в сервисе."""
-    registration_data = registration_data_factory("test@test.com")
+    registration_data = registration_data_factory()
     client.post(reverse("registration"), data=registration_data)
     response = client.post(
         reverse("auth"), data=registration_data_factory("anonymous@test.com")

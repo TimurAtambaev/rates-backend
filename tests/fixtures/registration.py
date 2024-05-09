@@ -20,10 +20,10 @@ class RegistrationData(TypedDict, total=False):
 def registration_data_factory() -> Callable[[str], RegistrationData]:
     """Фабрика тестовых данных для регистрации."""
 
-    def _factory(email: str) -> RegistrationData:
+    def _factory(email: str = "") -> RegistrationData:
         person = Person()
         return {
-            "email": email,
+            "email": email or person.email(),
             "first_name": person.first_name(),
             "last_name": person.last_name(),
             "password": person.password(),
