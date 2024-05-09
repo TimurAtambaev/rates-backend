@@ -57,7 +57,9 @@ class Auth(TokenObtainPairView):
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """Получение токена аутентификации по email и password."""
         form = AuthRegForm(request.data)
+        form.data._mutable = True
         form.data["username"] = form.data["email"]
+        form.data._mutable = False
         if not form.is_valid():
             return Response(
                 {"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST

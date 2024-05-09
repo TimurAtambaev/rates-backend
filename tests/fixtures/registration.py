@@ -17,29 +17,29 @@ class RegistrationData(TypedDict, total=False):
 
 
 @pytest.fixture()
-def registration_data_factory() -> Callable[[], RegistrationData]:
+def registration_data_factory() -> Callable[[str], RegistrationData]:
     """Фабрика тестовых данных для регистрации."""
 
-    def factory() -> RegistrationData:
+    def _factory(email: str) -> RegistrationData:
         person = Person()
         return {
-            "email": person.email(),
+            "email": email,
             "first_name": person.first_name(),
             "last_name": person.last_name(),
             "password": person.password(),
         }
 
-    return factory
+    return _factory
 
 
 UserAssertion: TypeAlias = Callable[[str, RegistrationData], None]
 
 
-@pytest.fixture(scope="session")
-def assert_correct_user() -> UserAssertion:
-    """Проверка регистрации пользователя."""
+@pytest.fixture()
+def assert_correct_registration() -> UserAssertion:
+    """Проверка корректной регистрации пользователя."""
 
-    def factory(email: str, expected: RegistrationData) -> None:
+    def _check(email: str, expected: RegistrationData) -> None:
         user = AppUser.objects.filter(email=email).first()
         assert user
         assert user.id
@@ -51,4 +51,4 @@ def assert_correct_user() -> UserAssertion:
         for field_name, data_value in expected.items():
             assert getattr(user, field_name) == data_value
 
-    return factory
+    return _check
