@@ -3,7 +3,6 @@ from typing import Callable, TypeAlias, TypedDict
 
 import pytest
 from mimesis import Person
-from mimesis.schema import Field, Schema
 
 from api.models import AppUser
 
@@ -38,6 +37,8 @@ UserAssertion: TypeAlias = Callable[[str, RegistrationData], None]
 
 @pytest.fixture(scope="session")
 def assert_correct_user() -> UserAssertion:
+    """Проверка регистрации пользователя."""
+
     def factory(email: str, expected: RegistrationData) -> None:
         user = AppUser.objects.filter(email=email).first()
         assert user

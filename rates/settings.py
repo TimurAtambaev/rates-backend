@@ -15,7 +15,6 @@ from pathlib import Path
 
 from corsheaders.defaults import default_headers
 from decouple import config
-from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -163,7 +162,7 @@ CACHES = {
         "LOCATION": f"redis://{config('REDIS_HOST')}:{config('REDIS_PORT')}/0",
     }
 }
-CACHE_TIMEOUT = int(config('CACHE_TIMEOUT', 0))
+CACHE_TIMEOUT = int(config("CACHE_TIMEOUT", 0))
 
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
@@ -183,8 +182,9 @@ REDIS_PORT = int(config("REDIS_PORT"))
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 MOSCOW_UTC_OFFSET = 3
-HOUR_TO_RUN_PERIODIC_TASK = int(config(
-    "HOUR_TO_RUN_PERIODIC_TASK")) - MOSCOW_UTC_OFFSET
+HOUR_TO_RUN_PERIODIC_TASK = (
+    int(config("HOUR_TO_RUN_PERIODIC_TASK")) - MOSCOW_UTC_OFFSET
+)
 MINUTE_TO_RUN_PERIODIC_TASK = 0
 MAX_CURRENCY_CHARCODE = 5
 CURRENCY_KEY_IN_API = "Valute"
@@ -207,7 +207,9 @@ USE_I18N = True
 
 USE_TZ = True
 
-FIXTURE_DIRS = [os.path.join(BASE_DIR, "tests/fixtures"), ]
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, "tests/fixtures"),
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

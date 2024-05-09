@@ -9,7 +9,7 @@ from django.urls import reverse
 from tests.fixtures.registration import RegistrationData, UserAssertion
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_valid_registration(
     client: Client,
     registration_data_factory: Callable[[], RegistrationData],
