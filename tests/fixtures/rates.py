@@ -18,7 +18,7 @@ class RatesData(TypedDict, total=False):
 
 @pytest.fixture()
 def rates_data_factory() -> Callable[[int | None, int | None], RatesData]:
-    """Фабрика данных для тестов котировок валют."""
+    """Фабрика входных данных для тестов котировок валют."""
 
     def _factory(
         currency_id: Optional[int] = None, threshold: Optional[int] = None

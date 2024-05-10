@@ -23,9 +23,9 @@ class Command(BaseCommand):
         schedule, _ = CrontabSchedule.objects.get_or_create(
             hour=HOUR_TO_RUN_PERIODIC_TASK, minute=MINUTE_TO_RUN_PERIODIC_TASK
         )
-
-        PeriodicTask.objects.update_or_create(
-            crontab=schedule,
-            name="download_rates",
-            task="download_rates",
-        )
+        if not PeriodicTask.objects.filter(name="download_rates"):
+            PeriodicTask.objects.create(
+                crontab=schedule,
+                name="download_rates",
+                task="download_rates",
+            )

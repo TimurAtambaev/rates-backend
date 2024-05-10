@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
-    "drf_yasg",
+    "drf_spectacular",
     "django_filters",
     "corsheaders",
     "django_celery_beat",
@@ -131,6 +131,14 @@ REST_FRAMEWORK = {
     "LimitOffsetPagination",
     "PAGE_SIZE": 10,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Rates Backend API",
+    "DESCRIPTION": "Бэкенд сервиса для отслеживания динамики курса рубля "
+    "по отношению к валютам на основе дневных котировок ЦБ РФ.",
+    "VERSION": "0.0.1",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 REFRESH_TOKEN_LIFETIME = int(config("REFRESH_TOKEN_LIFETIME", 14))

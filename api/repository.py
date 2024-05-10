@@ -5,16 +5,15 @@ from typing import Iterable, Optional
 
 from django.db import transaction
 
-from api.forms import AuthRegForm
 from api.models import AppUser, Currency, Rates, UserCurrency
 
 
-def create_user(data: AuthRegForm) -> None:
+def create_user(data: dict) -> None:
     """Создать нового пользователя."""
     with transaction.atomic():
-        data.cleaned_data["username"] = data.cleaned_data["email"]
-        user = AppUser.objects.create(**data.cleaned_data)
-        user.set_password(data.cleaned_data["password"])
+        data["username"] = data["email"]
+        user = AppUser.objects.create(**data)
+        user.set_password(data["password"])
         user.save(update_fields=["password"])
 
 
