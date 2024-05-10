@@ -140,31 +140,28 @@ class AnaliticsView(APIView):
                     "endpoint 'currency/all/' to obtain all available "
                     "currencies"
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_404_NOT_FOUND,
             )
-        if not (threshold := request.GET.get("threshold")):
-            return JsonResponse(
-                {"errors": "missing 'threshold' in query params"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if not (date_from := request.GET.get("date_from")):
-            return JsonResponse(
-                {"errors": "missing 'date_from' in query params"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if not (date_to := request.GET.get("date_to")):
-            return JsonResponse(
-                {"errors": "missing 'date_to' in query params"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        for query_param in (
+            "threshold",
+            "date_from",
+            "date_to",
+        ):  # обязательные параметры запроса на аналитику
+            if not request.GET.get(query_param):
+                return JsonResponse(
+                    {"errors": f"'{query_param}' required in query params"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         try:
-            threshold = int(threshold)
-            date_from = datetime.fromisoformat(date_from).date()
-            date_to = datetime.fromisoformat(date_to).date()
+            threshold = int(request.GET.get("threshold"))
+            date_from = datetime.fromisoformat(
+                request.GET.get("date_from")
+            ).date()
+            date_to = datetime.fromisoformat(request.GET.get("date_to")).date()
         except Exception as exc:
             return JsonResponse(
-                {"errors": f"wrong query params: {exc}"},
+                {"errors": f"please check query params: '{exc}'"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

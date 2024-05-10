@@ -7,7 +7,7 @@ import pytest
 from django.test import Client
 from django.urls import reverse
 
-from tests.fixtures.rates import RatesAssertion, RatesData
+from tests.fixtures.rates import RatesAssertion, RatesData, RatesQueryAssertion
 
 
 @pytest.mark.django_db()
@@ -49,7 +49,7 @@ def test_get_rates_unauthorized(
     client: Client,
     rates_factory: Callable,
 ) -> None:
-    """Тест получения списка котировок валют неавторизованным пользователем."""
+    """Тест получения котировок валют неавторизованным пользователем."""
     rate = rates_factory()
     response = client.get(reverse("rates"))
     assert response.status_code == HTTPStatus.OK
@@ -78,14 +78,13 @@ def test_sort_rate(
 def test_get_rates_authorized(
     client: Client,
     user_token: Callable,
-    rates_factory: Callable,
+    rates_query_factory: Callable,
     user_currency_factory: Callable,
+    assert_correct_rates: RatesQueryAssertion,
 ) -> None:
     """Тест получения списка котировок валют авторизованным пользователем."""
     user, token = user_token()
-    rates_factory(charcode="USD", value=100)
-    rates_factory(charcode="USD", value=200)
-    rates_factory(charcode="EUR", value=300)
+    rates_query_factory()
     user_currency = user_currency_factory(
         user=user, charcode="USD", threshold=150
     )
@@ -93,8 +92,20 @@ def test_get_rates_authorized(
         reverse("rates"), headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == HTTPStatus.OK
-    assert len(response.json()["rates"]) == 2
-    assert response.json()["rates"][0]["charcode"] == user_currency.charcode
-    assert response.json()["rates"][1]["charcode"] == user_currency.charcode
-    assert not response.json()["rates"][0]["is_threshold_exceeded"]
-    assert response.json()["rates"][1]["is_threshold_exceeded"]
+    assert len(response.json()["rates"]) == 3
+    assert_correct_rates(response.json()["rates"], user_currency.charcode)
+
+
+@pytest.mark.django_db()
+def test_get_currencies(
+    client: Client,
+    currency_factory: Callable,
+) -> None:
+    """Тест получения всех валют."""
+    currency = currency_factory()
+    for _ in range(3):
+        currency_factory()
+    response = client.get(reverse("currencies"))
+    assert response.status_code == HTTPStatus.OK
+    assert len(response.json()["currencies"]) == 4
+    assert response.json()["currencies"][str(currency.id)] == currency.charcode
