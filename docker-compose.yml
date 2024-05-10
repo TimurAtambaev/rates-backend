@@ -16,7 +16,7 @@ services:
      ports:
        - 8888:8888
      volumes:
-       - ./:/app
+       - .:/app/
      networks:
        - rates
 
@@ -53,7 +53,7 @@ services:
      networks:
        - rates
      volumes:
-       - .:/rates/
+       - .:/app/
 
    beat:
      <<: *celery_template

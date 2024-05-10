@@ -114,11 +114,9 @@ class RatesView(APIView):
             get_filter_by_code_rates(user_currencies_dict, order_by)
         )
         for rate in trackable_rates:
-            for currency in user_currencies_dict:
-                if rate["charcode"] == currency:
-                    rate["is_threshold_exceeded"] = (
-                        rate["value"] > user_currencies_dict[currency]
-                    )
+            rate["is_threshold_exceeded"] = (
+                rate["value"] > user_currencies_dict[rate["charcode"]]
+            )
         return JsonResponse({"rates": trackable_rates})
 
 
