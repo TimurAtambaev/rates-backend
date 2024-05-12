@@ -134,7 +134,7 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Rates Backend API",
+    "TITLE": "rates-backend",
     "DESCRIPTION": "Бэкенд сервиса для отслеживания динамики курса рубля "
     "по отношению к валютам на основе дневных котировок ЦБ РФ.",
     "VERSION": "0.0.1",

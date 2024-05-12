@@ -14,7 +14,7 @@ COPY poetry.lock pyproject.toml ./
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app:$PYTHONPATH
-ENV POETRY_VERSION "~=1.6.1"
+ENV POETRY_VERSION "~=1.7.1"
 ENV TZ="Europe/Moscow"
 
 RUN pip install --no-cache-dir --upgrade pip && \
@@ -22,5 +22,4 @@ RUN pip install --no-cache-dir --upgrade pip && \
     poetry config virtualenvs.create false && \
     poetry install
 
-COPY tests /app/tests
 COPY . /app/

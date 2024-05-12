@@ -17,4 +17,9 @@ $ docker-compose build
 $ docker-compose up
 ```
 
-API доступно на http://0.0.0.0:8888/api/v1/. Документация: http://0.0.0.0:8888/api/v1/docs/, http://0.0.0.0:8888/api/v1/redoc/.
+* API доступно на http://0.0.0.0:8888/api/v1/.
+* Документация: http://0.0.0.0:8888/api/v1/redoc/, http://0.0.0.0:8888/api/v1/docs/.
+* Запуск тестов:
+```bash
+$ docker-compose exec rates make tests
+```
