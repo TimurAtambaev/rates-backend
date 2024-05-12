@@ -24,6 +24,19 @@ jobs:
           POSTGRES_DB: test_db
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
+    env:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASS: ""
+      DJANGO_SETTINGS_MODULE: rates.settings
+      CACHE_TIMEOUT: 900
+      HOUR_TO_RUN_PERIODIC_TASK: 9
+      MINUTE_TO_RUN_PERIODIC_TASK: 50
 
     steps:
     - uses: actions/checkout@v4
