@@ -5,7 +5,7 @@
 ## Требования
 
 * [Docker](https://docs.docker.com/)
-* [docker-compose](https://docs.docker.com/compose/)
+* [docker compose](https://docs.docker.com/compose/)
 
 ## Сборка и запуск
 
@@ -21,5 +21,5 @@ $ docker compose up
 * Документация: http://0.0.0.0:8888/api/v1/docs/, http://0.0.0.0:8888/api/v1/redoc/.
 * Запуск тестов:
 ```bash
-$ docker-compose exec rates make tests
+$ docker compose exec rates make tests
 ```
